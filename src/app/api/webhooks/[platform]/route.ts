@@ -42,7 +42,11 @@ export async function POST(
       return NextResponse.json({ type: 1 });
     }
 
-    let response: any = null;
+    let response: {
+      replyText?: string;
+      targetId?: string;
+      buttons?: unknown[];
+    } | null = null;
 
     if (platform === 'telegram') {
       response = await handleTelegramWebhook(body);

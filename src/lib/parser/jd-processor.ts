@@ -1,6 +1,6 @@
 import { StructuredJD } from '../../types/analyzer';
 import { cleanText } from './text-cleaner';
-import { SKILL_TAXONOMY, normalizeSkill } from '../taxonomy/skill-taxonomy';
+import { SKILL_TAXONOMY } from '../taxonomy/skill-taxonomy';
 
 export function parseJobDescription(rawText: string): StructuredJD {
   const text = cleanText(rawText);

@@ -1,4 +1,4 @@
-import { FullAnalysisResult, MultiResumeAnalysisReport } from '../../types/analyzer';
+import { FullAnalysisResult } from '../../types/analyzer';
 
 export function generateMarkdownReport(analysis: FullAnalysisResult): string {
   const {
@@ -11,11 +11,9 @@ export function generateMarkdownReport(analysis: FullAnalysisResult): string {
     matchedSkills,
     missingSkills,
     drawbacks,
-    sectionAnalysis,
     projectAnalysis,
     recommendedSkills,
     courseRecommendations,
-    projectRecommendations,
     roadmap,
     interviewQuestions,
   } = analysis;

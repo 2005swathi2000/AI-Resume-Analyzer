@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { JobDna, JobDnaItem, EvidenceItem, JobDnaMapNode, DnaClusterCategory } from '../types/analyzer';
-import { ZoomIn, ZoomOut, RotateCcw, Info } from 'lucide-react';
+import React, { useState } from 'react';
+import { JobDna, EvidenceItem, JobDnaMapNode, DnaClusterCategory } from '../types/analyzer';
+import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 
 interface JobDnaMapProps {
   jobDna: JobDna;
@@ -431,7 +431,7 @@ export default function JobDnaMap({ jobDna, rawEvidence, jobTitle }: JobDnaMapPr
             </div>
 
             <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', background: 'var(--bg-primary)', padding: '8px', borderRadius: '6px', marginBottom: '8px' }}>
-              📄 <strong>Resume Evidence:</strong> "{selectedNode.resumeEvidence}"
+              📄 <strong>Resume Evidence:</strong> &quot;{selectedNode.resumeEvidence}&quot;
             </div>
 
             <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px' }}>

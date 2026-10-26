@@ -50,7 +50,7 @@ export default function CareerTwinView({ careerTwin, candidateName, jobTitle }: 
             👤 SIGNATURE FEATURE — CAREER TWIN ALIGNMENT
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-            Comparing target role expectations ({jobTitle}) against {candidateName}'s verified career profile.
+            Comparing target role expectations ({jobTitle}) against {candidateName}&apos;s verified career profile.
           </p>
         </div>
 
@@ -102,7 +102,7 @@ export default function CareerTwinView({ careerTwin, candidateName, jobTitle }: 
                 {getStatusBadge(node.status)}
                 {node.evidenceSnippet && (
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                    "{node.evidenceSnippet.substring(0, 50)}..."
+                    &quot;{node.evidenceSnippet.substring(0, 50)}...&quot;
                   </div>
                 )}
               </div>

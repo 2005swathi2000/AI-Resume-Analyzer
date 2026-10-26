@@ -6,7 +6,6 @@ import {
   Zap,
   Upload,
   FileText,
-  CheckCircle,
   AlertTriangle,
   XCircle,
   Download,
@@ -66,18 +65,6 @@ export default function CareerIntelligencePage() {
   // What-If Simulator Selected Skills State
   const [selectedWhatIfSkills, setSelectedWhatIfSkills] = useState<string[]>([]);
 
-  // Application Readiness Checklist State
-  const [checklist, setChecklist] = useState<Record<string, boolean>>({
-    degree: true,
-    programming: true,
-    framework: true,
-    cloud: false,
-    project: true,
-    certification: false,
-    github: true,
-    metrics: false,
-  });
-
   // Career Copilot State
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [copilotMessages, setCopilotMessages] = useState<Array<{ sender: 'user' | 'bot'; text: string }>>([
@@ -92,7 +79,7 @@ export default function CareerIntelligencePage() {
 
   const registerMessagingSession = async (
     jd: string,
-    resumesPayload: any[],
+    resumesPayload: Array<Record<string, unknown>>,
     singleRes?: FullAnalysisResult,
     multiRep?: MultiResumeAnalysisReport
   ) => {
@@ -1164,16 +1151,32 @@ export default function CareerIntelligencePage() {
                 <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   🎯 Your Job Readiness Score
                 </span>
+                <div style={{ margin: '8px 0 4px 0' }}>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '3px 10px',
+                    borderRadius: '12px',
+                    fontSize: '0.76rem',
+                    fontWeight: 700,
+                    background: singleAnalysis.usedLlmProvider ? 'rgba(56, 189, 248, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+                    color: singleAnalysis.usedLlmProvider ? '#38bdf8' : '#22c55e',
+                    border: `1px solid ${singleAnalysis.usedLlmProvider ? 'rgba(56, 189, 248, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`
+                  }}>
+                    {singleAnalysis.usedLlmProvider ? '✨ Gemini AI-Enhanced Mode' : '🛡️ Deterministic Local Engine Mode (Offline & Private)'}
+                  </span>
+                </div>
                 <div className="readiness-value">{singleAnalysis.readinessScore.score}%</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '8px' }}>
                   {singleAnalysis.readinessScore.tier}
                 </div>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 16px auto' }}>
-                  "{singleAnalysis.readinessScore.summaryQuote}"
+                  &ldquo;{singleAnalysis.readinessScore.summaryQuote}&rdquo;
                 </p>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <button className="btn btn-secondary" onClick={() => setShowWhyNot100(!showWhyNot100)}>
-                    <HelpCircle style={{ width: 16 }} /> Why isn't your score higher?
+                    <HelpCircle style={{ width: 16 }} /> Why isn&apos;t your score higher?
                   </button>
                   <button className="btn btn-hero" onClick={() => setActiveJourneyStep('improve')}>
                     Build my roadmap →
@@ -1185,7 +1188,7 @@ export default function CareerIntelligencePage() {
               {showWhyNot100 && (
                 <div className="console-card" style={{ borderLeft: '4px solid var(--warning)' }}>
                   <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>
-                    Why isn't your readiness score higher?
+                    Why isn&apos;t your readiness score higher?
                   </h3>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
                     You are currently at {singleAnalysis.readinessScore.score}%. You lost point(s) due to the following evidence gaps:
@@ -1242,7 +1245,7 @@ export default function CareerIntelligencePage() {
                         </span>
                       </div>
                       <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', background: 'var(--bg-primary)', padding: '8px', borderRadius: '6px', marginBottom: '6px' }}>
-                        📄 <strong>Resume Evidence:</strong> "{ev.foundEvidence}"
+                        📄 <strong>Resume Evidence:</strong> &ldquo;{ev.foundEvidence}&rdquo;
                       </div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                         Match Type: {ev.matchType} • Score Contribution: +{ev.scoreContribution} pts

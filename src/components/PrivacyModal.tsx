@@ -23,12 +23,16 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
           </button>
         </div>
 
-        <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: 1.6 }}>
-          Your uploaded Job Description and Resumes are processed strictly in-memory for the duration of this active session. Documents are not permanently stored unless persistent database storage is explicitly configured.
+        <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.6 }}>
+          Your uploaded Job Description and Resumes are processed strictly in-memory for the duration of this active session. Documents are never permanently stored on disk.
+        </p>
+
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: 1.5 }}>
+          <strong>Mode Distinction:</strong> When running in <em>Local Engine Mode</em> (default, no Gemini key), 100% of the analysis runs locally with zero external network calls. If an optional <em>Google Gemini API key</em> is configured, relevant resume skills and role requirements are transmitted via HTTPS to Google for conversational coaching and bullet rewrites.
         </p>
 
         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', background: 'var(--surface-elevated)', padding: '10px 12px', borderRadius: '8px', marginBottom: '20px' }}>
-          🔒 Processed for this session • In-memory parsing only
+          🔒 In-memory parsing only • Zero persistent document storage
         </div>
 
         <div style={{ textAlign: 'right' }}>

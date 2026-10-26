@@ -7,7 +7,6 @@ import {
   getBoundSessionForUser,
   getCareerSession,
   CareerIntelligenceSession,
-  buildPlatformDeepLinks,
 } from './session-service';
 
 export interface IncomingBotMessage {

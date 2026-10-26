@@ -8,7 +8,7 @@ import {
   InterviewDifficulty,
 } from '../types/analyzer';
 import { evaluateMockAnswer } from '../lib/engine/mock-interviewer';
-import { MessageSquare, AlertTriangle, CheckCircle, XCircle, Sparkles, HelpCircle } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface AiInterviewerPanelProps {
   questions: InterviewQuestionItem[];
@@ -109,7 +109,7 @@ export default function AiInterviewerPanel({ questions, resumeText }: AiIntervie
           </div>
 
           <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text-primary)' }}>
-            "{currentQ.question}"
+            &ldquo;{currentQ.question}&rdquo;
           </h3>
           <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
             Focus: {currentQ.suggestedFocus}
@@ -229,7 +229,7 @@ export default function AiInterviewerPanel({ questions, resumeText }: AiIntervie
               {/* Follow-up Question */}
               {evaluation.followUpQuestion && (
                 <div style={{ fontSize: '0.85rem', background: 'var(--accent-glow)', color: 'var(--accent-primary)', padding: '10px 14px', borderRadius: '8px', fontWeight: 600 }}>
-                  💬 <strong>Interviewer Follow-Up:</strong> "{evaluation.followUpQuestion}"
+                  💬 <strong>Interviewer Follow-Up:</strong> &ldquo;{evaluation.followUpQuestion}&rdquo;
                 </div>
               )}
             </div>

@@ -1,12 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+const nextConfig: NextConfig = {
   allowedDevOrigins: [
     "localhost:3000",
     "127.0.0.1:3000",
@@ -28,6 +22,6 @@ const nextConfig = {
       },
     ];
   },
-} as any;
+};
 
 export default nextConfig;

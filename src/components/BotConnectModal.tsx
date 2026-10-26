@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Smartphone, Copy, Sparkles, CheckCircle2, ShieldCheck, Link2 } from 'lucide-react';
+import { X, Smartphone, Sparkles, ShieldCheck, Link2 } from 'lucide-react';
 
 export type BotPlatform = 'telegram' | 'discord' | 'whatsapp' | 'google-chat';
 
@@ -18,7 +18,6 @@ export default function BotConnectModal({ platform, sessionId, onClose }: BotCon
 
   const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'CareerCopilotBot';
   const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER || '15551234567';
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ai-resume-analyzer-sand-beta.vercel.app';
 
   const startParam = sessionId ? sessionId : 'START';
 
@@ -70,36 +69,40 @@ export default function BotConnectModal({ platform, sessionId, onClose }: BotCon
   useEffect(() => {
     if (!platform || !details) return;
     let isMounted = true;
-    setIsTesting(true);
+    const webhook = details.webhook;
+    const command = details.command;
 
-    fetch(details.webhook, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: {
-          text: details.command,
-          from: { id: 'web_session_user', first_name: 'Candidate' },
-        },
-      }),
-    })
-      .then((res) => res.json())
-      .then((json) => {
+    const runTest = async () => {
+      setIsTesting(true);
+      try {
+        const res = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: {
+              text: command,
+              from: { id: 'web_session_user', first_name: 'Candidate' },
+            },
+          }),
+        });
+        const json = await res.json();
         if (isMounted) {
           if (json.text) setTestOutput(json.text);
           else setTestOutput('Bot response output generated successfully.');
         }
-      })
-      .catch(() => {
+      } catch {
         if (isMounted) setTestOutput('Error fetching bot response.');
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) setIsTesting(false);
-      });
+      }
+    };
+
+    runTest();
 
     return () => {
       isMounted = false;
     };
-  }, [platform, sessionId]);
+  }, [platform, sessionId, details]);
 
   if (!platform || !details) return null;
 
@@ -203,7 +206,7 @@ export default function BotConnectModal({ platform, sessionId, onClose }: BotCon
 
         <div style={{ background: 'var(--surface-elevated)', padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '20px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
           <div>Webhook: <code style={{ color: 'var(--accent-primary)' }}>{details.webhook}</code></div>
-          <div>Trigger Command: <strong style={{ color: 'var(--text-primary)' }}>"{details.command}"</strong></div>
+          <div>Trigger Command: <strong style={{ color: 'var(--text-primary)' }}>&quot;{details.command}&quot;</strong></div>
         </div>
 
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>

@@ -1,7 +1,7 @@
 import { FullAnalysisResult } from '../../types/analyzer';
 
 export function generatePdfHtmlReport(analysis: FullAnalysisResult): string {
-  const { candidateName, resumeFilename, jobTitle, company, atsScore, alignmentScore, matchedSkills, missingSkills, drawbacks, projectAnalysis, recommendedSkills, courseRecommendations, roadmap, interviewQuestions } = analysis;
+  const { candidateName, resumeFilename, jobTitle, company, atsScore, alignmentScore, matchedSkills, missingSkills, drawbacks, courseRecommendations, interviewQuestions } = analysis;
 
   return `<!DOCTYPE html>
 <html lang="en">

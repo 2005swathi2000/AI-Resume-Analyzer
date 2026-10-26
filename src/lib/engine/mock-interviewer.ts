@@ -94,8 +94,8 @@ export function evaluateMockAnswer(
   if (isKeywordStuffed) depthPct = 25;
 
   let technicalAccuracyPct = Math.min(95, Math.round(questionRelevancePct * 0.4 + conceptCoveragePct * 0.5 + (connectorCount > 0 ? 10 : 0)));
-  let clarityPct = connectorCount >= 1 || wordCount > 20 ? 80 : 50;
-  let practicalEvidencePct = answerLower.includes('for example') || answerLower.includes('in my project') || answerLower.includes('we built') || answerLower.includes('i used') ? 85 : 30;
+  const clarityPct = connectorCount >= 1 || wordCount > 20 ? 80 : 50;
+  const practicalEvidencePct = answerLower.includes('for example') || answerLower.includes('in my project') || answerLower.includes('we built') || answerLower.includes('i used') ? 85 : 30;
 
   if (isKeywordStuffed) {
     technicalAccuracyPct = Math.min(45, technicalAccuracyPct);

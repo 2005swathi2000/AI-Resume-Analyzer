@@ -5,7 +5,6 @@ import { parseJobDescription } from '../src/lib/parser/jd-processor.ts';
 import { parseResume } from '../src/lib/parser/resume-parser.ts';
 import { normalizeSkill } from '../src/lib/taxonomy/skill-taxonomy.ts';
 import { matchSkills } from '../src/lib/engine/matching-engine.ts';
-import { calculateAtsScore, calculateAlignmentScore } from '../src/lib/engine/ats-scorer.ts';
 import { buildJobDna, buildCareerTwin } from '../src/lib/engine/career-twin.ts';
 import { findSkillAdjacencies } from '../src/lib/engine/skill-adjacency.ts';
 import { calculateWhatIfProjection } from '../src/lib/engine/what-if-simulator.ts';

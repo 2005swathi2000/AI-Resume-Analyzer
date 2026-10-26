@@ -1,12 +1,21 @@
 import { processCommonChatService, IncomingBotMessage, BotResponse } from '../common-chat-service';
 
-export async function handleDiscordWebhook(body: any): Promise<BotResponse | null> {
+interface DiscordPayload {
+  member?: { user?: { id?: string | number; username?: string } };
+  author?: { id?: string | number; username?: string };
+  user?: { id?: string | number; username?: string };
+  data?: { options?: Array<{ value?: string }>; name?: string };
+  content?: string;
+}
+
+export async function handleDiscordWebhook(body: Record<string, unknown> | null | undefined): Promise<BotResponse | null> {
   if (!body) return null;
+  const payload = body as DiscordPayload;
 
   // Handle Discord Interaction / Slash Command / Message
-  const senderId = String(body.member?.user?.id || body.author?.id || body.user?.id || 'unknown_discord_user');
-  const senderName = body.member?.user?.username || body.author?.username || body.user?.username || 'Discord User';
-  const text = body.data?.options?.[0]?.value || body.data?.name || body.content || '/analyze';
+  const senderId = String(payload.member?.user?.id || payload.author?.id || payload.user?.id || 'unknown_discord_user');
+  const senderName = payload.member?.user?.username || payload.author?.username || payload.user?.username || 'Discord User';
+  const text = payload.data?.options?.[0]?.value || payload.data?.name || payload.content || '/analyze';
 
   const incomingMessage: IncomingBotMessage = {
     platform: 'discord',

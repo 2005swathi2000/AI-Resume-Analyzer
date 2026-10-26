@@ -1,16 +1,34 @@
 import { processCommonChatService, IncomingBotMessage, BotResponse } from '../common-chat-service';
 
-export async function handleTelegramWebhook(body: any): Promise<BotResponse | null> {
+interface TelegramMessage {
+  chat?: { id?: string | number };
+  from?: { id?: string | number; first_name?: string };
+  text?: string;
+  caption?: string;
+  document?: { file_id?: string; file_name?: string };
+}
+
+interface TelegramPayload {
+  message?: TelegramMessage;
+  callback_query?: {
+    data?: string;
+    from?: { id?: string | number; first_name?: string };
+    message?: TelegramMessage;
+  };
+}
+
+export async function handleTelegramWebhook(body: Record<string, unknown> | null | undefined): Promise<BotResponse | null> {
   if (!body) return null;
+  const payloadData = body as TelegramPayload;
 
   // Handle message or inline button callback query
-  const msg = body.message || body.callback_query?.message;
+  const msg = payloadData.message || payloadData.callback_query?.message;
   if (!msg) return null;
 
-  const chatId = body.callback_query?.message?.chat?.id || msg.chat?.id || msg.from?.id;
-  const senderId = String(body.callback_query?.from?.id || msg.from?.id || chatId || 'unknown_tg_user');
-  const senderName = body.callback_query?.from?.first_name || msg.from?.first_name || 'Telegram User';
-  const text = body.callback_query?.data || msg.text || msg.caption || '/start';
+  const chatId = payloadData.callback_query?.message?.chat?.id || msg.chat?.id || msg.from?.id;
+  const senderId = String(payloadData.callback_query?.from?.id || msg.from?.id || chatId || 'unknown_tg_user');
+  const senderName = payloadData.callback_query?.from?.first_name || msg.from?.first_name || 'Telegram User';
+  const text = payloadData.callback_query?.data || msg.text || msg.caption || '/start';
 
   let attachmentText: string | undefined = undefined;
   if (msg.document) {
@@ -55,7 +73,7 @@ export async function handleTelegramWebhook(body: any): Promise<BotResponse | nu
           : { text: b.label, callback_data: b.action },
       ]);
 
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         chat_id: chatId,
         text: response.replyText,
         parse_mode: 'Markdown',

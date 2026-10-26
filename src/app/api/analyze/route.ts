@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { parsePdfBuffer } from '../../../lib/parser/pdf-parser';
 import { parseDocxBuffer } from '../../../lib/parser/docx-parser';
 import { cleanText } from '../../../lib/parser/text-cleaner';
-import { validateFile } from '../../../lib/parser/file-validator';
+import { validateFile, sanitizeFilename, validateResumeText } from '../../../lib/parser/file-validator';
 import { analyzeSingleResume, analyzeMultipleResumes } from '../../../lib/engine/analyzer-pipeline';
 import { DEMO_JOB_DESCRIPTION, DEMO_RESUME_A, DEMO_RESUME_B, DEMO_RESUME_C } from '../../../lib/demo/demo-data';
 
@@ -67,12 +67,13 @@ export async function POST(req: NextRequest) {
       let extractedJdText = '';
 
       if (jdFile && jdFile.size > 0) {
-        const val = validateFile(jdFile.name, undefined, jdFile.size);
+        const safeJdName = sanitizeFilename(jdFile.name);
+        const val = validateFile(safeJdName, undefined, jdFile.size);
         if (!val.isValid) return NextResponse.json({ success: false, error: val.error }, { status: 400 });
 
         const arrayBuf = await jdFile.arrayBuffer();
         const buffer = Buffer.from(arrayBuf);
-        const ext = jdFile.name.split('.').pop()?.toLowerCase();
+        const ext = safeJdName.split('.').pop()?.toLowerCase();
 
         if (ext === 'pdf') {
           const pdfRes = await parsePdfBuffer(buffer);
@@ -96,6 +97,12 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      const jdValidation = validateResumeText(extractedJdText);
+      if (!jdValidation.isValid) {
+        return NextResponse.json({ success: false, error: 'Job Description text is empty or invalid.' }, { status: 400 });
+      }
+      extractedJdText = jdValidation.cleanedText;
+
       if (!resumeFiles || resumeFiles.length === 0) {
         return NextResponse.json(
           { success: false, error: 'Please upload at least one Candidate Resume file (PDF, DOCX, or TXT).' },
@@ -114,44 +121,47 @@ export async function POST(req: NextRequest) {
       const failedFiles: Array<{ fileName: string; reason: string }> = [];
 
       for (const rFile of resumeFiles) {
+        const safeFileName = sanitizeFilename(rFile.name);
         try {
-          const val = validateFile(rFile.name, undefined, rFile.size);
+          const val = validateFile(safeFileName, undefined, rFile.size);
           if (!val.isValid) {
-            failedFiles.push({ fileName: rFile.name, reason: val.error || 'Invalid file format or size' });
+            failedFiles.push({ fileName: safeFileName, reason: val.error || 'Invalid file format or size' });
             continue;
           }
 
           const arrayBuf = await rFile.arrayBuffer();
           const buffer = Buffer.from(arrayBuf);
-          const ext = rFile.name.split('.').pop()?.toLowerCase();
+          const ext = safeFileName.split('.').pop()?.toLowerCase();
           let rText = '';
 
           if (ext === 'pdf') {
             const pdfRes = await parsePdfBuffer(buffer);
             if (pdfRes.isScannedOrUnreadable || !pdfRes.text.trim()) {
-              failedFiles.push({ fileName: rFile.name, reason: pdfRes.error || 'Unable to extract readable text from this PDF.' });
+              failedFiles.push({ fileName: safeFileName, reason: pdfRes.error || 'Unable to extract readable text from this PDF.' });
               continue;
             }
             rText = pdfRes.text;
           } else if (ext === 'docx') {
             const docxRes = await parseDocxBuffer(buffer);
             if (docxRes.error || !docxRes.text.trim()) {
-              failedFiles.push({ fileName: rFile.name, reason: docxRes.error || 'Unable to extract readable text from this DOCX.' });
+              failedFiles.push({ fileName: safeFileName, reason: docxRes.error || 'Unable to extract readable text from this DOCX.' });
               continue;
             }
             rText = docxRes.text;
           } else {
             rText = cleanText(buffer.toString('utf-8'));
-            if (!rText.trim()) {
-              failedFiles.push({ fileName: rFile.name, reason: 'File content is empty.' });
-              continue;
-            }
           }
 
-          extractedResumes.push({ content: rText, filename: rFile.name });
+          const textVal = validateResumeText(rText);
+          if (!textVal.isValid) {
+            failedFiles.push({ fileName: safeFileName, reason: textVal.error || 'File content is empty or unreadable.' });
+            continue;
+          }
+
+          extractedResumes.push({ content: textVal.cleanedText, filename: safeFileName });
         } catch (err) {
           const reason = err instanceof Error ? err.message : 'Corrupted file or parsing error.';
-          failedFiles.push({ fileName: rFile.name, reason });
+          failedFiles.push({ fileName: safeFileName, reason });
         }
       }
 

@@ -1,15 +1,44 @@
 import { processCommonChatService, IncomingBotMessage, BotResponse } from '../common-chat-service';
 
-export async function handleWhatsAppWebhook(body: any): Promise<BotResponse | null> {
+interface WhatsAppMessage {
+  from?: string;
+  text?: { body?: string };
+  button?: { text?: string };
+  interactive?: { button_reply?: { title?: string } };
+}
+
+interface WhatsAppContact {
+  profile?: { name?: string };
+}
+
+interface WhatsAppValue {
+  messages?: WhatsAppMessage[];
+  contacts?: WhatsAppContact[];
+}
+
+interface WhatsAppPayload extends WhatsAppValue {
+  entry?: Array<{
+    changes?: Array<{
+      value?: WhatsAppValue;
+    }>;
+  }>;
+  message?: WhatsAppMessage;
+  from?: string;
+  name?: string;
+  text?: string;
+}
+
+export async function handleWhatsAppWebhook(body: Record<string, unknown> | null | undefined): Promise<BotResponse | null> {
   if (!body) return null;
+  const payload = body as WhatsAppPayload;
 
-  const value = body.entry?.[0]?.changes?.[0]?.value || body;
-  const message = value.messages?.[0] || body.message;
-  if (!message && !body.text) return null;
+  const value = payload.entry?.[0]?.changes?.[0]?.value || payload;
+  const message = value.messages?.[0] || payload.message;
+  if (!message && !payload.text) return null;
 
-  const senderId = String(message?.from || body.from || 'unknown_wa_user');
-  const senderName = value.contacts?.[0]?.profile?.name || body.name || 'WhatsApp User';
-  const text = message?.text?.body || message?.button?.text || message?.interactive?.button_reply?.title || body.text || 'START';
+  const senderId = String(message?.from || payload.from || 'unknown_wa_user');
+  const senderName = value.contacts?.[0]?.profile?.name || payload.name || 'WhatsApp User';
+  const text = message?.text?.body || message?.button?.text || message?.interactive?.button_reply?.title || payload.text || 'START';
 
   const incomingMessage: IncomingBotMessage = {
     platform: 'whatsapp',
